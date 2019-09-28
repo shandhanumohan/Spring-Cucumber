@@ -1,0 +1,54 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE" , "net.masterthought:cucumber-reporting:4.7.0"
+    }
+}
+
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'groovy'
+
+group 'com.sample.cucumber'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testRuntime
+    }
+}
+
+task cucumber() {
+    dependsOn assemble, compileTestJava
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'json:target/cucumber-reports/Cucumber.json','--plugin', 'pretty',
+                    '--glue', 'com.sample.test', 'src/test/resources', '--tags', '@AddTest']
+
+        }
+    }
+}
+
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    testCompile group: 'net.masterthought', name: 'cucumber-reporting', version: '4.7.0'
+    testCompile group: 'io.cucumber', name: 'cucumber-spring', version: '4.7.2'
+    testCompile group: 'io.cucumber', name: 'cucumber-java', version: '4.7.2'
+    testCompile group: 'io.cucumber', name: 'cucumber-junit', version: '4.7.2'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
