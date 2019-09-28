@@ -1,9 +1,14 @@
+
+import net.masterthought.cucumber.ReportBuilder
+
 buildscript {
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE" , "net.masterthought:cucumber-reporting:4.7.0"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE" ,
+                "org.codehaus.gpars:gpars:1.2.1",
+                "net.masterthought:cucumber-reporting:1.4.0"
     }
 }
 
@@ -30,8 +35,13 @@ configurations {
     }
 }
 
+/*task cleanReports() {
+    File reportOutputDirectory = new File("target/cucumber-reports")
+    reportOutputDirectory.deleteDir()
+}*/
+
 task cucumber() {
-    dependsOn assemble, compileTestJava
+    dependsOn  assemble, compileTestJava
     doLast {
         javaexec {
             main = "io.cucumber.core.cli.Main"
@@ -40,8 +50,41 @@ task cucumber() {
                     '--glue', 'com.sample.test', 'src/test/resources', '--tags', '@AddTest']
 
         }
+        generateReport()
     }
 }
+
+task generateReportTask() {
+    doLast {
+        generateReport()
+    }
+}
+
+
+def generateReport() {
+    File reportOutputDirectory = new File("target/cucumber-reports/pretty")
+    reportOutputDirectory.deleteDir()
+
+    def jsonReports = fileTree(dir: "target/cucumber-reports").include '**/*.json'.toString()
+    List<String> jsonReportFiles = new ArrayList<String>()
+    jsonReports.each { File file ->
+        jsonReportFiles.add("target/cucumber-reports/${file.name}".toString());
+    }
+
+    String projectName = "cucumber-test";
+    boolean runWithJenkins = false;
+    boolean parallelTesting = false;
+
+    net.masterthought.cucumber.Configuration configuration = new net.masterthought.cucumber.Configuration(reportOutputDirectory, projectName);
+
+    configuration.setParallelTesting(parallelTesting);
+    configuration.setRunWithJenkins(runWithJenkins);
+    configuration.setBuildNumber("19.1");
+    ReportBuilder reportBuilder = new ReportBuilder(jsonReportFiles, configuration);
+    reportBuilder.generateReports();
+    println("\nReport available on: "+reportOutputDirectory.getCanonicalPath()+"/feature-overview.html")
+}
+
 
 
 dependencies {

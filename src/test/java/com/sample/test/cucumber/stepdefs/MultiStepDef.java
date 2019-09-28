@@ -1,10 +1,8 @@
 package com.sample.test.cucumber.stepdefs;
 
-import com.sample.test.calc.Calculate;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class MultiStepDef extends AbstractStepdef {
 

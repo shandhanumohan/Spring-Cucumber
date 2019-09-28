@@ -8,5 +8,5 @@ Feature: arithmetic addtion operations...
     Examples:
       | number1 | number2 | result |
       | 2       | 3       | 5     |
-      | 4       | 6       | 10     |
-      | 7       | 8       | 15     |
+      | 4       | 6       | 11     |
+      | 7       | 8       | 15    |
