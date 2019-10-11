@@ -1,8 +1,8 @@
 package com.sample.test.cucumber.stepdefs;
 
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import org.junit.Assert;
 
 public class AddStepdefs extends AbstractStepdef {
